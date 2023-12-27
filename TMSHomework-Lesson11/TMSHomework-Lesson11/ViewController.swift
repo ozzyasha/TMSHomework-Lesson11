@@ -12,6 +12,9 @@ import SnapKit
 class ViewController: UIViewController {
     
     var displayLabel = UILabel()
+    var fakeLabel = UILabel()
+    var operation = ""
+    var number = 0.0
     
     let buttonsSpacing = 15
     
@@ -24,10 +27,10 @@ class ViewController: UIViewController {
     let digitArrayBottom = ["1", "2", "3"]
     var digitBottomButtons: [UIButton] = []
     
-    let bottomArray = ["0", ","]
+    let bottomArray = ["0", "."]
     var bottomArrayButtons: [UIButton] = []
     
-    let greyOperationsArray = ["C", "√", "%"]
+    let greyOperationsArray = ["AC", "√", "%"]
     var greyOperationsArrayButtons: [UIButton] = []
     
     let orangeOperationsArray = ["÷", "×", "-", "+", "="]
@@ -45,11 +48,12 @@ class ViewController: UIViewController {
         
         setupFullButtonsHStack()
         setupDisplayLabelView()
+        setupFakeLabelView()
         
     }
     
     func setupDisplayLabelView() {
-        displayLabel = UILabel()
+        
         displayLabel.text = "0"
         displayLabel.textColor = UIColor.white
         displayLabel.textAlignment = .right
@@ -62,6 +66,22 @@ class ViewController: UIViewController {
         setupDisplayLabelConstraints()
     }
     
+    func setupFakeLabelView() {
+        
+        fakeLabel.text = "0"
+        fakeLabel.textColor = UIColor.white
+        fakeLabel.textAlignment = .right
+        fakeLabel.font = displayLabel.font.withSize(100)
+        fakeLabel.isHidden = true
+        
+        view.addSubview(fakeLabel)
+        
+        fakeLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        setupFakeLabelConstraints()
+    }
+    
+    
     func setupButtonView(button: UIButton, title: String) {
         button.setTitle(title, for: .normal)
         button.setTitleColor(UIColor.white, for: .normal)
@@ -69,6 +89,7 @@ class ViewController: UIViewController {
         setupButtonsConstraints(button: button)
         let buttonWidth = (Int(view.frame.width) - (5 * buttonsSpacing))/4
         button.layer.cornerRadius = CGFloat(buttonWidth/2)
+        button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
     }
     
     func setupGreyOperationsArrayButtonsView() {
@@ -278,15 +299,210 @@ class ViewController: UIViewController {
         }
     }
     
+    func setupFakeLabelConstraints() {
+        fakeLabel.snp.makeConstraints { make in
+            make.right.equalTo(view.safeAreaLayoutGuide).offset(-20)
+            make.bottom.equalTo(fullButtonsHStack.snp_topMargin).offset(-20)
+        }
+    }
+    
+    func checkDisplayLabelSize() {
+        switch displayLabel.text?.count {
+        case 0, 1, 2, 3, 4, 5, 6:
+            displayLabel.font = displayLabel.font.withSize(100)
+        case 7:
+            displayLabel.font = displayLabel.font.withSize(100-10)
+        case 8:
+            displayLabel.font = displayLabel.font.withSize(100-20)
+        case 9:
+            displayLabel.font = displayLabel.font.withSize(100-30)
+        default:
+            let str: String = displayLabel.text ?? "No value"
+            let limitedStr = String(str.prefix(9))
+            displayLabel.text = limitedStr
+        }
+    }
+    
+    func checkFakeLabelSize() {
+        switch fakeLabel.text?.count {
+        case 0, 1, 2, 3, 4, 5, 6:
+            fakeLabel.font = fakeLabel.font.withSize(100)
+        case 7:
+            fakeLabel.font = fakeLabel.font.withSize(100-10)
+        case 8:
+            fakeLabel.font = fakeLabel.font.withSize(100-20)
+        case 9:
+            fakeLabel.font = fakeLabel.font.withSize(100-30)
+        default:
+            let str: String = fakeLabel.text ?? "No value"
+            let limitedStr = String(str.prefix(9))
+            fakeLabel.text = limitedStr
+        }
+    }
+    
+    
+    @objc func buttonTapped(_ sender: UIButton) {
+        
+        switch sender.titleLabel?.text {
+        case "AC":
+            fakeLabel.isHidden = true
+            sender.setBackgroundImage(UIImage(named: "whiteButton"), for: .highlighted)
+            displayLabel.text = "0"
+            
+            orangeOperationsArrayButtons.forEach { button in
+                button.backgroundColor = UIColor.orange
+                button.setTitleColor(UIColor.white, for: .normal)
+            }
+            
+        case "0", ".", "1", "2", "3", "4", "5", "6", "7", "8", "9":
+            fakeLabel.isHidden = true
+            sender.setBackgroundImage(UIImage(named: "buttonWithOpacity50"), for: .highlighted)
+            if displayLabel.text == "0" {
+                displayLabel.text = sender.titleLabel?.text
+            } else {
+                displayLabel.text! += sender.titleLabel?.text ?? "?"
+            }
+            checkDisplayLabelSize()
+        case "+":
+            let firstNumber = Double(displayLabel.text ?? "Error") ?? 0.0000
+            number = firstNumber
+            fakeLabel.text = displayLabel.text
+            displayLabel.text = ""
+            fakeLabel.isHidden = false
+            sender.backgroundColor = UIColor.white
+            sender.setTitleColor(UIColor.orange, for: .normal)
+            operation = "+"
+            checkDisplayLabelSize()
+        case "-":
+            let firstNumber = Double(displayLabel.text ?? "Error") ?? 0.0000
+            number = firstNumber
+            fakeLabel.text = displayLabel.text
+            displayLabel.text = ""
+            fakeLabel.isHidden = false
+            sender.backgroundColor = UIColor.white
+            sender.setTitleColor(UIColor.orange, for: .normal)
+            operation = "-"
+            checkDisplayLabelSize()
+        case "÷":
+            let firstNumber = Double(displayLabel.text ?? "Error") ?? 0.0000
+            number = firstNumber
+            fakeLabel.text = displayLabel.text
+            displayLabel.text = ""
+            fakeLabel.isHidden = false
+            sender.backgroundColor = UIColor.white
+            sender.setTitleColor(UIColor.orange, for: .normal)
+            operation = "/"
+            checkDisplayLabelSize()
+        case "×":
+            let firstNumber = Double(displayLabel.text ?? "Error") ?? 0.0000
+            number = firstNumber
+            fakeLabel.text = displayLabel.text
+            displayLabel.text = ""
+            fakeLabel.isHidden = false
+            sender.backgroundColor = UIColor.white
+            sender.setTitleColor(UIColor.orange, for: .normal)
+            operation = "*"
+            checkDisplayLabelSize()
+        case "√":
+            sender.setBackgroundImage(UIImage(named: "whiteButton"), for: .highlighted)
+            let firstNumber = Double(displayLabel.text ?? "Error") ?? 0.0000
+            number = firstNumber
+            displayLabel.text = ""
+            
+            let root = sqrt(number)
+            if root.truncatingRemainder(dividingBy: 1) == 0 {
+                displayLabel.text = "\(Int(root))"
+            } else {
+                displayLabel.text = "\(root)"
+            }
+            checkDisplayLabelSize()
+        case "%":
+            sender.setBackgroundImage(UIImage(named: "whiteButton"), for: .highlighted)
+            let firstNumber = Double(displayLabel.text ?? "Error") ?? 0.0000
+            number = firstNumber
+            displayLabel.text = ""
+            operation = "%"
+            
+            let percent = number/100
+            if percent.truncatingRemainder(dividingBy: 1) == 0 {
+                displayLabel.text = "\(Int(percent))"
+            } else {
+                displayLabel.text = "\(percent)"
+            }
+            checkDisplayLabelSize()
+            
+        case "=":
+            
+            fakeLabel.isHidden = true
+            orangeOperationsArrayButtons.forEach { button in
+                button.backgroundColor = UIColor.orange
+                button.setTitleColor(UIColor.white, for: .normal)
+            }
+            
+            let secondNumber = Double(displayLabel.text ?? "Error") ?? 0.0000
+            checkDisplayLabelSize()
+            switch operation {
+            case "+":
+                let sum = number + secondNumber
+                if sum.truncatingRemainder(dividingBy: 1) == 0 {
+                    displayLabel.text = "\(Int(sum))"
+                } else {
+                    displayLabel.text = "\(sum)"
+                }
+                checkDisplayLabelSize()
+            case "-":
+                let subtraction = number - secondNumber
+                if subtraction.truncatingRemainder(dividingBy: 1) == 0 {
+                    displayLabel.text = "\(Int(subtraction))"
+                } else {
+                    displayLabel.text = "\(subtraction)"
+                }
+                checkDisplayLabelSize()
+            case "/":
+                if secondNumber != 0 {
+                    let division = number / secondNumber
+                    
+                    if division.truncatingRemainder(dividingBy: 1) == 0 {
+                        displayLabel.text = "\(Int(division))"
+                    } else {
+                        displayLabel.text = "\(division)"
+                    }
+                    
+                } else {
+                    displayLabel.text = "Error"
+                }
+                checkDisplayLabelSize()
+            case "*":
+                let multiplication = number * secondNumber
+                if multiplication.truncatingRemainder(dividingBy: 1) == 0 {
+                    displayLabel.text = "\(Int(multiplication))"
+                } else {
+                    displayLabel.text = "\(multiplication)"
+                }
+                checkDisplayLabelSize()
+                
+            default:
+                displayLabel.text = displayLabel.text
+                checkDisplayLabelSize()
+            }
+            
+        default:
+            displayLabel.text! = "Unexpected error: no such button"
+        }
+        
+        checkDisplayLabelSize()
+        checkFakeLabelSize()
+    }
+    
 }
 
 /*
- Сверстать калькулятор на UIStackView
- Уменьшить шрифт при наборе от 6 цифр
+ Сверстать калькулятор на UIStackView +
+ Уменьшить шрифт при наборе от 6 цифр +
  
  *********************
  При умножении больших цифр выводить как на айфоне число в степени
- Деление на ноль обработать
- Вместо "+-" написать вычисление корня
+ Деление на ноль обработать +
+ Вместо "+-" написать вычисление корня +
  
  */
