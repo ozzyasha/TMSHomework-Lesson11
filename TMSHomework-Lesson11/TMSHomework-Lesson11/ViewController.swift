@@ -6,15 +6,278 @@
 //
 
 import UIKit
+import SnapKit
+
 
 class ViewController: UIViewController {
-
+    
+    var displayLabel = UILabel()
+    
+    let buttonsSpacing = 15
+    
+    let digitArrayTop = ["7", "8", "9"]
+    var digitTopButtons: [UIButton] = []
+    
+    let digitArrayCenter = ["4", "5", "6"]
+    var digitCenterButtons: [UIButton] = []
+    
+    let digitArrayBottom = ["1", "2", "3"]
+    var digitBottomButtons: [UIButton] = []
+    
+    let bottomArray = ["0", ","]
+    var bottomArrayButtons: [UIButton] = []
+    
+    let greyOperationsArray = ["C", "√", "%"]
+    var greyOperationsArrayButtons: [UIButton] = []
+    
+    let orangeOperationsArray = ["÷", "×", "-", "+", "="]
+    var orangeOperationsArrayButtons: [UIButton] = []
+    
+    var digitsVStack = UIStackView()
+    var orangeOperationsVStack = UIStackView()
+    var fullButtonsHStack = UIStackView()
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        view.backgroundColor = UIColor.black
+        
+        setupFullButtonsHStack()
+        setupDisplayLabelView()
+        
+    }
+    
+    func setupDisplayLabelView() {
+        displayLabel = UILabel()
+        displayLabel.text = "0"
+        displayLabel.textColor = UIColor.white
+        displayLabel.textAlignment = .right
+        displayLabel.font = displayLabel.font.withSize(100)
+        
+        view.addSubview(displayLabel)
+        
+        displayLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        setupDisplayLabelConstraints()
+    }
+    
+    func setupButtonView(button: UIButton, title: String) {
+        button.setTitle(title, for: .normal)
+        button.setTitleColor(UIColor.white, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 30)
+        setupButtonsConstraints(button: button)
+        let buttonWidth = (Int(view.frame.width) - (5 * buttonsSpacing))/4
+        button.layer.cornerRadius = CGFloat(buttonWidth/2)
+    }
+    
+    func setupGreyOperationsArrayButtonsView() {
+        greyOperationsArray.forEach { symbol in
+            let symbolButton = UIButton()
+            setupButtonView(button: symbolButton, title: symbol)
+            symbolButton.setTitleColor(UIColor.black, for: .normal)
+            symbolButton.backgroundColor = UIColor.systemGray
+            greyOperationsArrayButtons.append(symbolButton)
+        }
+    }
+    
+    func setupDigitTopButtonsView() {
+        digitArrayTop.forEach { digit in
+            let digitButton = UIButton()
+            setupButtonView(button: digitButton, title: digit)
+            digitButton.backgroundColor = UIColor.darkGray
+            digitTopButtons.append(digitButton)
+        }
+    }
+    
+    func setupDigitCenterButtonsView() {
+        digitArrayCenter.forEach { digit in
+            let digitButton = UIButton()
+            setupButtonView(button: digitButton, title: digit)
+            digitButton.backgroundColor = UIColor.darkGray
+            digitCenterButtons.append(digitButton)
+        }
+    }
+    
+    func setupDigitBottomButtonsView() {
+        digitArrayBottom.forEach { digit in
+            let digitButton = UIButton()
+            setupButtonView(button: digitButton, title: digit)
+            digitButton.backgroundColor = UIColor.darkGray
+            digitBottomButtons.append(digitButton)
+        }
+    }
+    
+    func setupBottomArrayButtonsView() {
+        bottomArray.forEach { symbol in
+            let symbolButton = UIButton()
+            setupButtonView(button: symbolButton, title: symbol)
+            symbolButton.backgroundColor = UIColor.darkGray
+            if symbol == "0" {
+                symbolButton.contentHorizontalAlignment = .left
+                let buttonWidth = (Int(view.frame.width) - 5 * buttonsSpacing)/4
+                symbolButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: CGFloat((buttonWidth/2/2 + buttonsSpacing/2)), bottom: 0, right: 0)
+            }
+            bottomArrayButtons.append(symbolButton)
+        }
+    }
+    
+    func setupOrangeOperationsArrayButtonsView() {
+        orangeOperationsArray.forEach { symbol in
+            
+            let symbolButton = UIButton()
+            setupButtonView(button: symbolButton, title: symbol)
+            symbolButton.backgroundColor = UIColor.orange
+            orangeOperationsArrayButtons.append(symbolButton)
+        }
+    }
+    
+    
+    func setupDigitsVStack() {
+        
+        digitsVStack.axis = .vertical
+        digitsVStack.alignment = .center
+        digitsVStack.spacing = CGFloat(buttonsSpacing)
+        
+        
+        setupGreyOperationsArrayButtonsView()
+        
+        let greyOperationsArrayHStack = UIStackView()
+        
+        greyOperationsArrayButtons.forEach { button in
+            
+            greyOperationsArrayHStack.axis = .horizontal
+            greyOperationsArrayHStack.alignment = .center
+            greyOperationsArrayHStack.spacing = CGFloat(buttonsSpacing)
+            
+            greyOperationsArrayHStack.addArrangedSubview(button)
+        }
+        
+        setupDigitTopButtonsView()
+        
+        let digitsTopHStack = UIStackView()
+        
+        digitTopButtons.forEach { button in
+            
+            digitsTopHStack.axis = .horizontal
+            digitsTopHStack.alignment = .center
+            digitsTopHStack.spacing = CGFloat(buttonsSpacing)
+            
+            digitsTopHStack.addArrangedSubview(button)
+            
+        }
+        
+        setupDigitCenterButtonsView()
+        
+        let digitsCenterHStack = UIStackView()
+        
+        digitCenterButtons.forEach { button in
+            
+            digitsCenterHStack.axis = .horizontal
+            digitsCenterHStack.alignment = .center
+            digitsCenterHStack.spacing = CGFloat(buttonsSpacing)
+            
+            digitsCenterHStack.addArrangedSubview(button)
+            
+        }
+        
+        setupDigitBottomButtonsView()
+        
+        let digitsBottomHStack = UIStackView()
+        
+        digitBottomButtons.forEach { button in
+            
+            digitsBottomHStack.axis = .horizontal
+            digitsBottomHStack.alignment = .center
+            digitsBottomHStack.spacing = CGFloat(buttonsSpacing)
+            
+            digitsBottomHStack.addArrangedSubview(button)
+            
+        }
+        
+        setupBottomArrayButtonsView()
+        
+        let bottomArrayHStack = UIStackView()
+        
+        bottomArrayButtons.forEach { button in
+            bottomArrayHStack.axis = .horizontal
+            bottomArrayHStack.alignment = .center
+            bottomArrayHStack.spacing = CGFloat(buttonsSpacing)
+            bottomArrayHStack.addArrangedSubview(button)
+        }
+        
+        digitsVStack.addArrangedSubview(greyOperationsArrayHStack)
+        digitsVStack.addArrangedSubview(digitsTopHStack)
+        digitsVStack.addArrangedSubview(digitsCenterHStack)
+        digitsVStack.addArrangedSubview(digitsBottomHStack)
+        digitsVStack.addArrangedSubview(bottomArrayHStack)
+        
+    }
+    
+    func setupOrangeOperationsVStack() {
+        
+        
+        orangeOperationsVStack.axis = .vertical
+        orangeOperationsVStack.spacing = CGFloat(buttonsSpacing)
+        orangeOperationsVStack.alignment = .center
+        
+        setupOrangeOperationsArrayButtonsView()
+        
+        orangeOperationsArrayButtons.forEach { button in
+            orangeOperationsVStack.addArrangedSubview(button)
+        }
+        
+    }
+    
+    func setupFullButtonsHStack() {
+        
+        view.addSubview(fullButtonsHStack)
+        
+        fullButtonsHStack.axis = .horizontal
+        fullButtonsHStack.spacing = CGFloat(buttonsSpacing)
+        fullButtonsHStack.alignment = .center
+        
+        setupDigitsVStack()
+        setupOrangeOperationsVStack()
+        
+        fullButtonsHStack.addArrangedSubview(digitsVStack)
+        fullButtonsHStack.addArrangedSubview(orangeOperationsVStack)
+        
+        fullButtonsHStack.translatesAutoresizingMaskIntoConstraints = false
+        setupFullButtonsHStackConstraints()
+    }
+    
+    func setupButtonsConstraints(button: UIButton) {
+        
+        let buttonWidth = (Int(view.frame.width) - (5 * buttonsSpacing))/4
+        
+        if button.titleLabel?.text == "0" {
+            button.snp.makeConstraints { make in
+                make.width.equalTo(buttonWidth*2+buttonsSpacing)
+                make.height.equalTo(buttonWidth)
+            }
+        } else {
+            button.snp.makeConstraints { make in
+                make.width.equalTo(buttonWidth)
+                make.height.equalTo(buttonWidth)
+            }
+        }
+    }
+    
+    func setupFullButtonsHStackConstraints() {
+        fullButtonsHStack.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(20)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-20)
+        }
     }
 
-
+    func setupDisplayLabelConstraints() {
+        displayLabel.snp.makeConstraints { make in
+            make.right.equalTo(view.safeAreaLayoutGuide).offset(-20)
+            make.bottom.equalTo(fullButtonsHStack.snp_topMargin).offset(-20)
+        }
+    }
+    
 }
 
 /*
