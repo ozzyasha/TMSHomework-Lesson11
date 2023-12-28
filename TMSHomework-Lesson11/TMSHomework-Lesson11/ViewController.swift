@@ -367,8 +367,10 @@ class ViewController: UIViewController {
         case "0", ".", "1", "2", "3", "4", "5", "6", "7", "8", "9":
             fakeLabel.isHidden = true
             sender.setBackgroundImage(UIImage(named: "buttonWithOpacity50"), for: .highlighted)
-            if displayLabel.text == "0" {
+            if displayLabel.text == "0" && sender.titleLabel?.text != "." {
                 displayLabel.text = sender.titleLabel?.text
+            } else if displayLabel.text!.contains(".") && sender.titleLabel?.text == "."{
+                displayLabel.text = displayLabel.text
             } else {
                 displayLabel.text! += sender.titleLabel?.text ?? "?"
             }
