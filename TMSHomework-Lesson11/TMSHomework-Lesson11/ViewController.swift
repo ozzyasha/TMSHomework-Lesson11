@@ -15,6 +15,7 @@ class ViewController: UIViewController {
     var fakeLabel = UILabel()
     var operation = ""
     var number = 0.0
+    let displayLabelSize = 85
     
     let buttonsSpacing = 15
     
@@ -57,7 +58,7 @@ class ViewController: UIViewController {
         displayLabel.text = "0"
         displayLabel.textColor = UIColor.white
         displayLabel.textAlignment = .right
-        displayLabel.font = displayLabel.font.withSize(100)
+        displayLabel.font = displayLabel.font.withSize(CGFloat(displayLabelSize))
         
         view.addSubview(displayLabel)
         
@@ -71,7 +72,7 @@ class ViewController: UIViewController {
         fakeLabel.text = "0"
         fakeLabel.textColor = UIColor.white
         fakeLabel.textAlignment = .right
-        fakeLabel.font = displayLabel.font.withSize(100)
+        fakeLabel.font = displayLabel.font.withSize(CGFloat(displayLabelSize))
         fakeLabel.isHidden = true
         
         view.addSubview(fakeLabel)
@@ -296,6 +297,7 @@ class ViewController: UIViewController {
         displayLabel.snp.makeConstraints { make in
             make.right.equalTo(view.safeAreaLayoutGuide).offset(-20)
             make.bottom.equalTo(fullButtonsHStack.snp_topMargin).offset(-20)
+            make.leading.equalTo(view.safeAreaLayoutGuide).offset(20)
         }
     }
     
@@ -309,13 +311,13 @@ class ViewController: UIViewController {
     func checkDisplayLabelSize() {
         switch displayLabel.text?.count {
         case 0, 1, 2, 3, 4, 5, 6:
-            displayLabel.font = displayLabel.font.withSize(100)
+            displayLabel.font = displayLabel.font.withSize(CGFloat(displayLabelSize))
         case 7:
-            displayLabel.font = displayLabel.font.withSize(100-10)
+            displayLabel.font = displayLabel.font.withSize(CGFloat(displayLabelSize-10))
         case 8:
-            displayLabel.font = displayLabel.font.withSize(100-20)
+            displayLabel.font = displayLabel.font.withSize(CGFloat(displayLabelSize-20))
         case 9:
-            displayLabel.font = displayLabel.font.withSize(100-30)
+            displayLabel.font = displayLabel.font.withSize(CGFloat(displayLabelSize-30))
         default:
             let str: String = displayLabel.text ?? "No value"
             let limitedStr = String(str.prefix(9))
@@ -326,13 +328,13 @@ class ViewController: UIViewController {
     func checkFakeLabelSize() {
         switch fakeLabel.text?.count {
         case 0, 1, 2, 3, 4, 5, 6:
-            fakeLabel.font = fakeLabel.font.withSize(100)
+            fakeLabel.font = fakeLabel.font.withSize(CGFloat(displayLabelSize))
         case 7:
-            fakeLabel.font = fakeLabel.font.withSize(100-10)
+            fakeLabel.font = fakeLabel.font.withSize(CGFloat(displayLabelSize-10))
         case 8:
-            fakeLabel.font = fakeLabel.font.withSize(100-20)
+            fakeLabel.font = fakeLabel.font.withSize(CGFloat(displayLabelSize-20))
         case 9:
-            fakeLabel.font = fakeLabel.font.withSize(100-30)
+            fakeLabel.font = fakeLabel.font.withSize(CGFloat(displayLabelSize-30))
         default:
             let str: String = fakeLabel.text ?? "No value"
             let limitedStr = String(str.prefix(9))
@@ -358,6 +360,7 @@ class ViewController: UIViewController {
             fakeLabel.isHidden = true
             sender.setBackgroundImage(UIImage(named: "whiteButton"), for: .highlighted)
             displayLabel.text = "0"
+            operation = "AC"
             
             orangeOperationsArrayButtons.forEach { button in
                 button.backgroundColor = UIColor.orange
@@ -450,6 +453,7 @@ class ViewController: UIViewController {
                 button.backgroundColor = UIColor.orange
                 button.setTitleColor(UIColor.white, for: .normal)
             }
+            sender.setBackgroundImage(UIImage(named: "buttonWithOpacity50"), for: .highlighted)
             
             let secondNumber = Double(displayLabel.text ?? "Error") ?? 0.0000
             checkDisplayLabelSize()
@@ -505,6 +509,8 @@ class ViewController: UIViewController {
                     displayLabel.text = "\(multiplication)"
                 }
                 checkDisplayLabelSize()
+            case "AC":
+                displayLabel.text = "0"
                 
             default:
                 displayLabel.text = displayLabel.text
