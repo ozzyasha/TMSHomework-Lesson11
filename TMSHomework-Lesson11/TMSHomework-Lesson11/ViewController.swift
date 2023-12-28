@@ -14,6 +14,7 @@ class ViewController: UIViewController {
     var displayLabel = UILabel()
     var fakeLabel = UILabel()
     var operation = ""
+    var percentOperation = ""
     var number = 0.0
     let displayLabelSize = 85
     
@@ -352,6 +353,10 @@ class ViewController: UIViewController {
         return 0
     }
     
+    func findPercent() {
+        
+    }
+    
     
     @objc func buttonTapped(_ sender: UIButton) {
         
@@ -360,7 +365,7 @@ class ViewController: UIViewController {
             fakeLabel.isHidden = true
             sender.setBackgroundImage(UIImage(named: "whiteButton"), for: .highlighted)
             displayLabel.text = "0"
-            operation = "AC"
+            operation = ""
             
             orangeOperationsArrayButtons.forEach { button in
                 button.backgroundColor = UIColor.orange
@@ -433,17 +438,24 @@ class ViewController: UIViewController {
             checkDisplayLabelSize()
         case "%":
             sender.setBackgroundImage(UIImage(named: "whiteButton"), for: .highlighted)
-            let firstNumber = Double(displayLabel.text ?? "Error") ?? 0.0000
-            number = firstNumber
-            displayLabel.text = ""
-            operation = "%"
             
-            let percent = number/100
-            if percent.truncatingRemainder(dividingBy: 1) == 0 {
-                displayLabel.text = "\(Int(percent))"
+            if operation == "" {
+                let firstNumber = Double(displayLabel.text ?? "Error") ?? 0.0000
+                number = firstNumber
+                
+                displayLabel.text = ""
+
+                let percent = number/100
+                if percent.truncatingRemainder(dividingBy: 1) == 0 {
+                    displayLabel.text = "\(Int(percent))"
+                } else {
+                    displayLabel.text = "\(percent)"
+                }
             } else {
-                displayLabel.text = "\(percent)"
+                percentOperation = operation
+                operation = "%"
             }
+            
             checkDisplayLabelSize()
             
         case "=":
@@ -509,7 +521,43 @@ class ViewController: UIViewController {
                     displayLabel.text = "\(multiplication)"
                 }
                 checkDisplayLabelSize()
-            case "AC":
+            case "%":
+                if percentOperation == "+" {
+                    let plusPercent = number + number * secondNumber / 100
+                    if plusPercent.truncatingRemainder(dividingBy: 1) == 0 {
+                        displayLabel.text = "\(Int(plusPercent))"
+                    } else {
+                        displayLabel.text = "\(plusPercent)"
+                    }
+                    operation = ""
+                } else if percentOperation == "-" {
+                    let minusPercent = number - number * secondNumber/100
+                    if minusPercent.truncatingRemainder(dividingBy: 1) == 0 {
+                        displayLabel.text = "\(Int(minusPercent))"
+                    } else {
+                        displayLabel.text = "\(minusPercent)"
+                    }
+                    operation = ""
+                } else if percentOperation == "/" {
+                    let dividePercent = number / number * secondNumber/100
+                    if dividePercent.truncatingRemainder(dividingBy: 1) == 0 {
+                        displayLabel.text = "\(Int(dividePercent))"
+                    } else {
+                        displayLabel.text = "\(dividePercent)"
+                    }
+                    operation = ""
+                } else if percentOperation == "*"{
+                    let multiplyPercent = number * number*secondNumber/100
+                    if multiplyPercent.truncatingRemainder(dividingBy: 1) == 0 {
+                        displayLabel.text = "\(Int(multiplyPercent))"
+                    } else {
+                        displayLabel.text = "\(multiplyPercent)"
+                    }
+                    operation = ""
+                }
+                
+                checkDisplayLabelSize()
+            case "":
                 displayLabel.text = "0"
                 
             default:
