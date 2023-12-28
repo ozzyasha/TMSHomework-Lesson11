@@ -340,6 +340,16 @@ class ViewController: UIViewController {
         }
     }
     
+    func countDecimalDigits(_ number: Double) -> Int {
+        let numberAsString = String(number)
+        
+        if let dotIndex = numberAsString.firstIndex(of: ".") {
+            return numberAsString.distance(from: dotIndex, to: numberAsString.endIndex) - 1
+        }
+        
+        return 0
+    }
+    
     
     @objc func buttonTapped(_ sender: UIButton) {
         
@@ -441,13 +451,20 @@ class ViewController: UIViewController {
             
             let secondNumber = Double(displayLabel.text ?? "Error") ?? 0.0000
             checkDisplayLabelSize()
+            
             switch operation {
             case "+":
                 let sum = number + secondNumber
                 if sum.truncatingRemainder(dividingBy: 1) == 0 {
                     displayLabel.text = "\(Int(sum))"
                 } else {
-                    displayLabel.text = "\(sum)"
+                    
+                    if countDecimalDigits(number) > countDecimalDigits(secondNumber) {
+                        displayLabel.text = String(format: "%.\(countDecimalDigits(number))f", sum)
+                    } else {
+                        displayLabel.text = String(format: "%.\(countDecimalDigits(secondNumber))f", sum)
+                    }
+                    
                 }
                 checkDisplayLabelSize()
             case "-":
@@ -455,7 +472,13 @@ class ViewController: UIViewController {
                 if subtraction.truncatingRemainder(dividingBy: 1) == 0 {
                     displayLabel.text = "\(Int(subtraction))"
                 } else {
-                    displayLabel.text = "\(subtraction)"
+                    
+                    if countDecimalDigits(number) > countDecimalDigits(secondNumber) {
+                        displayLabel.text = String(format: "%.\(countDecimalDigits(number))f", subtraction)
+                    } else {
+                        displayLabel.text = String(format: "%.\(countDecimalDigits(secondNumber))f", subtraction)
+                    }
+                    
                 }
                 checkDisplayLabelSize()
             case "/":
